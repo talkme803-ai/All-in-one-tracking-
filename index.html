@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargo World Tracking - Real-time Shipment Tracking</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-ship"></i>
+                <span>Cargo World Tracking</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#track" class="nav-link">Track</a></li>
+                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Real-time Cargo Tracking</h1>
+            <p class="hero-subtitle">Track your containers and shipments anywhere, anytime with our advanced tracking system</p>
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="trackingInput" placeholder="Enter BL Number or Container Number" maxlength="20">
+                    <button id="trackBtn" class="track-btn">
+                        <span>Track</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="hero-stats">
+            <div class="stat">
+                <h3>50M+</h3>
+                <p>Containers Tracked</p>
+            </div>
+            <div class="stat">
+                <h3>200+</h3>
+                <p>Ports Covered</p>
+            </div>
+            <div class="stat">
+                <h3>99.9%</h3>
+                <p>Uptime</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tracking Results -->
+    <section id="track" class="tracking-results hidden">
+        <div class="container">
+            <div class="result-card">
+                <div class="card-header">
+                    <h2>Shipment Details</h2>
+                    <button class="track-again-btn" onclick="showSearch()">
+                        <i class="fas fa-search"></i> Track Another
+                    </button>
+                </div>
+                <div class="shipment-details">
+                    <div class="detail-row">
+                        <span class="label">BL Number:</span>
+                        <span class="value" id="blNumber">N/A</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Container Number:</span>
+                        <span class="value" id="containerNumber">N/A</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Vessel Name:</span>
+                        <span class="value" id="vesselName">N/A</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">ETA:</span>
+                        <span class="value" id="eta">N/A</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Port of Loading:</span>
+                        <span class="value" id="portLoading">N/A</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Port of Discharge:</span>
+                        <span class="value" id="portDischarge">N/A</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Timeline -->
+            <div class="timeline-section">
+                <h3>Shipment Status Timeline</h3>
+                <div class="timeline">
+                    <div class="timeline-item active">
+                        <div class="timeline-icon">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Container Loaded</h4>
+                            <p>2024-01-15 08:30 AM</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item active">
+                        <div class="timeline-icon">
+                            <i class="fas fa-ship"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Vessel Departed</h4>
+                            <p>2024-01-16 14:20 PM</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>In Transit</h4>
+                            <p>2024-01-18 09:15 AM</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h4>Expected Arrival</h4>
+                            <p>2024-01-22 11:00 AM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Map Section -->
+            <div class="map-section">
+                <h3>Live Ship Tracking</h3>
+                <div id="map" class="map-container">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map-marked-alt"></i>
+                        <p>Live ship position on interactive map</p>
+                        <div class="ship-position">
+                            <span>Current Position:</span>
+                            <span id="currentPosition">25.276°N, 55.296°E</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-ship"></i>
+                        <span>Cargo World Tracking</span>
+                    </div>
+                    <p>Global cargo tracking solutions with real-time updates and comprehensive shipment visibility.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#">Container Tracking</a></li>
+                        <li><a href="#">BL Tracking</a></li>
+                        <li><a href="#">Live Ship Tracking</a></li>
+                        <li><a href="#">Port Schedules</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> support@cargoworld.com</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Global Headquarters</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Cargo World Tracking. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
