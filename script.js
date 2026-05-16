@@ -1,184 +1,73 @@
-// Mobile Navigation Toggle
-const hamburger = document.querySelector('.hamburger');
-const navMenu = document.querySelector('.nav-menu');
+// Complete script.js code
+async function performTracking() {
+  const inputValue = trackingInput.value.trim().toUpperCase();
 
-hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    navMenu.classList.toggle('active');
-});
+  if (!inputValue) {
+    alert('Please enter a BL Number or Container Number');
+    return;
+  }
 
-// Close mobile menu when clicking on a link
-document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    navMenu.classList.remove('active');
-}));
+  // Show loading spinner on the button
+  trackBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tracking...';
+  trackBtn.disabled = true;
 
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
+  try {
+    // Calling the Vercel serverless backend function
+    const response = await fetch(`/api/track?trackingNumber=${inputValue}`);
+    const result = await response.json();
 
-// Tracking functionality
-const trackingInput = document.getElementById('trackingInput');
-const trackBtn = document.getElementById('trackBtn');
-const trackingResults = document.querySelector('.tracking-results');
-const heroSection = document.querySelector('.hero');
+    if (result.meta && result.meta.code === 200 && result.data) {
+      const tracking = result.data;
+      
+      // Formatting the real-time API data
+      const liveData = {
+        blNumber: tracking.tracking_number,
+        containerNumber: tracking.tracking_number,
+        vesselName: tracking.vessel_name || 'Vessel Status Updating',
+        eta: tracking.scheduled_delivery_date || 'N/A',
+        portLoading: tracking.origin_country_code || 'N/A',
+        portDischarge: tracking.destination_country_code || 'N/A',
+        status: tracking.delivery_status || 'In Transit'
+      };
 
-// Sample tracking data
-const sampleData = {
-    'ABC1234567': {
-        blNumber: 'ABC1234567',
-        containerNumber: 'TLLU1234567',
-        vesselName: 'EVER ACE',
-        eta: '2024-01-22 11:00 AM',
-        portLoading: 'Shanghai, CN',
-        portDischarge: 'Los Angeles, US'
-    },
-    'XYZ9876543': {
-        blNumber: 'XYZ9876543',
-        containerNumber: 'MSKU4567890',
-        vesselName: 'MSC Gülsün',
-        eta: '2024-01-25 09:30 AM',
-        portLoading: 'Singapore, SG',
-        portDischarge: 'Rotterdam, NL'
-    }
-};
+      // Send data to display function
+      displayTrackingResults(liveData);
+      
+      // UI Transitions
+      trackingResults.classList.remove('hidden');
+      heroSection.style.display = 'none';
+      document.body.style.overflow = 'auto';
+      trackingResults.scrollIntoView({ behavior: 'smooth' });
 
-// Track button functionality
-trackBtn.addEventListener('click', performTracking);
-trackingInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        performTracking();
-    }
-});
-
-function performTracking() {
-    const inputValue = trackingInput.value.trim().toUpperCase();
-    
-    if (!inputValue) {
-        alert('Please enter a BL Number or Container Number');
-        return;
-    }
-
-    // Simulate API call
-    setTimeout(() => {
-        const data = sampleData[inputValue] || generateRandomData(inputValue);
-        displayTrackingResults(data);
-        trackingResults.classList.remove('hidden');
-        heroSection.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        
-        // Scroll to results
-        trackingResults.scrollIntoView({ behavior: 'smooth' });
-    }, 1500);
-
-    // Show loading state
-    trackBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Tracking...';
-    trackBtn.disabled = true;
-}
-
-function generateRandomData(inputValue) {
-    const vessels = ['EVER ACE', 'MSC Gülsün', 'COSCO Shipping Universe', 'OOCL Germany', 'HMM Algeciras'];
-    const portsLoading = ['Shanghai, CN', 'Singapore, SG', 'Busan, KR', 'Hong Kong, HK'];
-    const portsDischarge = ['Los Angeles, US', 'Rotterdam, NL', 'Hamburg, DE', 'New York, US'];
-    
-    return {
-        blNumber: inputValue,
-        containerNumber: inputValue.replace(/[^A-Z0-9]/g, '') + Math.random().toString(36).substr(2, 4).toUpperCase(),
-        vesselName: vessels[Math.floor(Math.random() * vessels.length)],
-        eta: new Date(Date.now() + Math.random() * 7 * 24 * 60 * 60 * 1000).toLocaleString(),
-        portLoading: portsLoading[Math.floor(Math.random() * portsLoading.length)],
-        portDischarge: portsDischarge[Math.floor(Math.random() * portsDischarge.length)]
-    };
-}
-
-function displayTrackingResults(data) {
-    document.getElementById('blNumber').textContent = data.blNumber;
-    document.getElementById('containerNumber').textContent = data.containerNumber;
-    document.getElementById('vesselName').textContent = data.vesselName;
-    document.getElementById('eta').textContent = data.eta;
-    document.getElementById('portLoading').textContent = data.portLoading;
-    document.getElementById('portDischarge').textContent = data.portDischarge;
-    
-    // Reset button
-    trackBtn.innerHTML = '<span>Track</span><i class="fas fa-arrow-right"></i>';
-    trackBtn.disabled = false;
-}
-
-// Show search again
-function showSearch() {
-    trackingResults.classList.add('hidden');
-    heroSection.style.display = 'flex';
-    trackingInput.value = '';
-    trackingInput.focus();
-    
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// Navbar scroll effect
-window.addEventListener('scroll', () => {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 100) {
-        navbar.style.background = 'rgba(13, 35, 61, 0.98)';
-        navbar.style.padding = '0.8rem 0';
     } else {
-        navbar.style.background = 'rgba(13, 35, 61, 0.95)';
-        navbar.style.padding = '1rem 0';
+      alert('No live data found for this number. Please check your container/BL number.');
     }
-});
 
-// Input formatting
-trackingInput.addEventListener('input', function() {
-    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-});
-
-// Auto-format input examples
-const examples = ['ABC1234567', 'XYZ9876543'];
-trackingInput.placeholder = `Enter BL Number or Container Number (e.g. ${examples[0]})`;
-
-// Animate stats on scroll
-function animateStats() {
-    const stats = document.querySelectorAll('.stat h3');
-    stats.forEach(stat => {
-        const finalValue = stat.textContent;
-        stat.style.opacity = '1';
-    });
+  } catch (error) {
+    console.error("Tracking Error:", error);
+    alert('Error connecting to the live server.');
+  } finally {
+    // Reset button state to original
+    trackBtn.innerHTML = 'Track &rarr;';
+    trackBtn.disabled = false;
+  }
 }
 
-// Intersection Observer for animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+// Function to update HTML text with live values securely
+function displayTrackingResults(data) {
+  // 1. Trying to update using IDs (If your HTML uses id="blNumber" etc.)
+  if(document.getElementById('blNumber')) document.getElementById('blNumber').innerText = data.blNumber;
+  if(document.getElementById('containerNumber')) document.getElementById('containerNumber').innerText = data.containerNumber;
+  if(document.getElementById('vesselName')) document.getElementById('vesselName').innerText = data.vesselName;
+  if(document.getElementById('eta')) document.getElementById('eta').innerText = data.eta;
+  if(document.getElementById('portLoading')) document.getElementById('portLoading').innerText = data.portLoading;
+  if(document.getElementById('portDischarge')) document.getElementById('portDischarge').innerText = data.portDischarge;
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observe elements for animation
-document.querySelectorAll('.result-card, .timeline-section, .map-section').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'all 0.6s ease';
-    observer.observe(el);
-});
-
-// Initialize
-document.addEventListener('DOMContentLoaded', function() {
-    trackingInput.focus();
-});
+  // 2. Trying to update using Data Attributes (If your HTML uses data-vessel-name etc.)
+  if(document.querySelector('[data-bl-number]')) document.querySelector('[data-bl-number]').innerText = data.blNumber;
+  if(document.querySelector('[data-container-number]')) document.querySelector('[data-container-number]').innerText = data.containerNumber;
+  if(document.querySelector('[data-vessel-name]')) document.querySelector('[data-vessel-name]').innerText = data.vesselName;
+  if(document.querySelector('[data-eta]')) document.querySelector('[data-eta]').innerText = data.eta;
+  if(document.querySelector('[data-port-loading]')) document.querySelector('[data-port-loading]').innerText = data.portLoading;
+  if(document.querySelector('[data-port-discharge]')) document.querySelector('[data-port-discharge]').innerText = data.portDischarge;
+}
